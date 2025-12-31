@@ -5,21 +5,20 @@
 ## terraform.tfvars (Important Concept)
 
 ### Default Behavior
-- Terraform automatically loads **terraform.tfvars**
+- Terraform automatically loads `terraform.tfvars`
 - No need to mention it explicitly while running commands
 
 ---
 
 ### Using Custom tfvars File
 If you change the tfvars file name (example: `dev.tfvars`),  
-you must **explicitly mention it** during apply.
+you must explicitly mention it during apply.
 
 ```bash
 terraform apply -var-file="dev.tfvars"
-
-
 Why Use Multiple tfvars Files?
--To manage multiple environments
+To manage multiple environments
+
 dev.tfvars
 
 test.tfvars
@@ -33,46 +32,45 @@ Clean and scalable infrastructure
 Key Point
 If terraform.tfvars exists → Terraform picks it by default
 
-Other files must be passed using -var-file
+Other tfvars files must be passed using -var-file
 
 Terraform State File
-
-
 What is terraform.tfstate?
-
 terraform.tfstate is a state file
 
 It maps:
 
 Terraform configuration (code)
+
 To real cloud resources (local / remote)
 
 Purpose of State File
--Tracks real infrastructure
--Stores current state of resources
-  -Maintains mapping between:
-  -Resource name in code
-  -Actual resource ID in cloud
+Tracks real infrastructure
 
+Stores current state of resources
 
+Maintains mapping between:
+
+Resource name in code
+
+Actual resource ID in cloud
 
 What Does State File Do?
 Tracks real-time changes
 
-
 Compares:
 
--Desired state (code)
--Current state (cloud)
+Desired state (code)
 
+Current state (cloud)
 
 Decides what to:
 
--Create
--Update
--Delete
+Create
 
+Update
 
+Delete
 
 State File Comparison Logic
 
@@ -102,8 +100,6 @@ Remote infrastructure changes
 
 Applies only required updates
 
-
-
 Terraform State Flow (Easy Diagram)
 
 +------------------+
@@ -123,12 +119,10 @@ Terraform State Flow (Easy Diagram)
 | Cloud Resources  |
 | (Current State)  |
 +------------------+
-
-
 Key Takeaways (Day-2)
 terraform.tfvars is loaded by default
 
-Custom tfvars must be passed explicitly
+Custom tfvars files must be passed explicitly
 
 terraform.tfstate tracks real infrastructure
 
@@ -143,10 +137,8 @@ state file → single source of truth
 
 terraform apply → reconciliation engine
 
+📁 Folder Structure
 
----
-
-### 📁 Folder Structure
 day-2/
 ├── provider.tf
 ├── main.tf
@@ -157,7 +149,6 @@ day-2/
 ├── output.tf
 ├── terraform.tfstate
 └── terraform-day-2.md
-
 
 
 ---
