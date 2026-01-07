@@ -1,0 +1,42 @@
+resource "aws_s3_bucket" "name" {
+  bucket = "how-to-train-ur-dragon"
+}
+
+resource "aws_s3_object" "name" {
+  bucket = aws_s3_bucket.name.id
+  key = "app.py"
+  source = "app.py"
+  etag = filemd5("app.py")
+
+}
+resource "aws_iam_role" "name" {
+  name = "lambda-role"
+  assume_role_policy = jsonencode({
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": ["sts:AssumeRole"],
+            "Principal": {
+                "Service": ["lambda.amazonaws.com"]
+            }
+        }
+    ]
+})
+}
+
+resource "aws_iam_role_policy_attachment" "name" {
+  role       = aws_iam_role.name.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_lambda_function" "name" {
+  function_name = "lambda"
+  runtime = "python3.12"
+  timeout = 900
+  role = aws_iam_role.name.arn
+  memory_size = 128
+  handler = "app.lambda_handler"
+  filename = "app.zip"
+  source_code_hash = filebase64sha256("app.zip")
+}
