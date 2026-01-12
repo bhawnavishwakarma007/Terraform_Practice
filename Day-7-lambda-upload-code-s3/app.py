@@ -5,7 +5,7 @@ import pymysql
 db_host = os.environ['DB_HOST']
 db_user = os.environ['DB_USER']
 db_pass = os.environ['DB_PASS']
-new_db_name = "test"  # Change as needed for ur code
+new_db_name = "test"  # Change as needed
 table_name = "mytable"  # Change as needed
 
 # Establish a database connection
