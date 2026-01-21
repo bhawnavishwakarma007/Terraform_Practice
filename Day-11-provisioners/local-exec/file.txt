@@ -1,0 +1,129 @@
+Where this command runs
+provisioner "local-exec" {
+  command = "aws s3 cp file.txt s3://${aws_s3_bucket.bucket.bucket}/file.txt"
+}
+
+
+📌 This command runs:
+
+On your local machine (where you run terraform apply)
+
+Not on EC2
+
+Using your locally installed AWS CLI
+
+The command itself
+aws s3 cp file.txt s3://<bucket-name>/file.txt
+
+aws
+
+AWS Command Line Interface
+
+s3
+
+Tells AWS CLI you are working with Amazon S3
+
+cp
+
+Means copy
+
+Similar to Linux cp
+
+file.txt
+
+Source file
+
+A file that exists locally on your machine
+
+Must be in the current directory (or give full path)
+
+s3://
+
+S3 URI scheme (like https:// for websites)
+
+${aws_s3_bucket.bucket.bucket}
+
+Terraform interpolation
+
+Resolves to the actual S3 bucket name
+
+Example:
+
+resource "aws_s3_bucket" "bucket" {
+  bucket = "my-unique-bucket-123"
+}
+
+
+Becomes:
+
+s3://my-unique-bucket-123
+
+/file.txt
+
+Destination object name in S3
+
+The file will be stored as:
+
+s3://my-unique-bucket-123/file.txt
+
+What Terraform actually runs
+
+Terraform converts this:
+
+aws s3 cp file.txt s3://${aws_s3_bucket.bucket.bucket}/file.txt
+
+
+Into something like:
+
+aws s3 cp file.txt s3://my-unique-bucket-123/file.txt
+
+What must exist for this to work
+✅ Requirements
+
+AWS CLI installed
+
+aws --version
+
+
+AWS credentials configured
+
+aws configure
+
+
+file.txt exists locally
+
+S3 bucket already created
+
+When does this command run?
+
+Runs during terraform apply
+
+Runs only when the resource is created or recreated
+
+If inside null_resource, it often uses triggers
+
+Common use cases
+
+✔ Upload build artifacts
+✔ Upload config files
+✔ CI/CD automation
+✔ One-time bootstrap actions
+
+⚠️ Important warnings (Exam + Real world)
+❌ Not idempotent
+
+If run again:
+
+It overwrites the file
+
+Terraform doesn’t track the object
+
+❌ Not recommended for production S3 uploads
+
+✅ Better Terraform-native way:
+
+resource "aws_s3_object" "file" {
+  bucket = aws_s3_bucket.bucket.bucket
+  key    = "file.txt"
+  source = "file.txt"
+}

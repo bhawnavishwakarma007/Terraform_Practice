@@ -1,0 +1,80 @@
+[root@ip-172-31-27-199 efs]# history
+    1  ls
+    2  ps 
+    3  ps ps aux
+    4  ps -ef
+    5  yum install httpd -y
+    6  systemctl start httpd
+    7  top
+    8  ps aux
+    9  top -u ec2-user
+   10  top -p 2041
+   11  ls -l
+   12  ls -la
+   13  ls -ld
+   14  chmod 724 file1
+   15  ls -ld
+   16  ls -la
+   17  useradd user1
+   18  usermod -aG root user1
+   19  cat /etc/passwd
+   20  vi /etc/ssh/sshd_config
+   21  service sshd reload
+   22  history
+   23  vi test.sh
+   24  sh test.sh
+   25  ls
+   26  cat file6
+   27  touch file1 file2 file3 file4 file5
+   28  vi file1
+   29  rm -rf file1
+   30  touch file1
+   31  vi file1
+   32  cat file1
+   33  cat > file1
+   34  cat file1
+   35  cat >> file1
+   36  cat file1
+   37  mkdir dev
+   38  mv file2 dev
+   39  cp file3 dev
+   40  cd dev
+   41  ls
+   42  cd ..
+   43  ls
+   44  cd dev
+   45  pwd
+   46  cd ..
+   47  yum install tree
+   48  tree
+   49  whoami
+   50  cd dev
+   51  echo "hyy it's file two" > file2
+   52  cat file2
+   53  ls | grep file2
+   54  yum list
+   55  history
+   56  yum repolist
+   57  yum repolist all
+   58  yum repoinfo
+   59  yum info
+   60  history
+   61  su - ec2-user
+   62  history
+   63  sudo yum install -y amazon-efs-utils~
+   64  200~sudo yum install -y amazon-efs-utils
+   65  yum install -y amazon-efs-utils
+   66  mkdir -p /mnt/efs
+   67  mount -t efs fs-0082cda3fd3639124:/ /mnt/efs
+   68  yum install botocore
+   69  sudo yum install -y amazon-efs-utils
+   70  sudo mount -t efs -o tls fs-0082cda3fd3639124:/ /mnt/efs
+   71  df -h | grep efs
+   72  cd /mnt/efs
+   73  sudo touch testfile.txt
+   74  ls -l
+   75  lsblk
+   76  df -h
+   77  mkfs -t ext4 /dev/xvdf
+   78  history
+[root@ip-172-31-27-199 efs]
