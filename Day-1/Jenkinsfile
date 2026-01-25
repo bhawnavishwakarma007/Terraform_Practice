@@ -1,5 +1,12 @@
 pipeline {
     agent any
+    parameters{
+    choice(
+        name:'ACTION',
+        choices:['apply','destroy'],
+        description:'Select Terraform action'
+        )
+     }
 
     stages {
         stage('git clone') {
@@ -21,13 +28,14 @@ pipeline {
             }
         }
     }
-        stage('terraform apply') {
+        stage('terraform apply/destroy') {
             steps {
                  dir('Day-1') {
-               sh 'terraform apply -auto-approve'
+               sh 'terraform ${ACTION} -auto-approve'
             }
           }
         }
      }
    }
+
 
