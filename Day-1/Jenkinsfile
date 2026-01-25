@@ -1,1 +1,33 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('git clone') {
+            steps {
+               git branch: 'main', url: 'https://github.com/bhawnavishwakarma007/Terraform_Practice.git'
+            }
+        }
+        stage('terraform init') {
+            steps {
+                dir('Day-1') {
+            sh 'terraform init'
+          }
+       }
+    }
+        stage('terraform plan') {
+            steps {
+                 dir('Day-1') {
+               sh 'terraform plan'
+            }
+        }
+    }
+        stage('terraform apply') {
+            steps {
+                 dir('Day-1') {
+               sh 'terraform apply -auto-approve'
+            }
+          }
+        }
+     }
+   }
 
