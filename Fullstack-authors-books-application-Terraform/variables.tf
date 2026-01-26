@@ -8,49 +8,54 @@ variable "vpc_name" {
   default = ""
 }
 
-variable "subnet-1_cidr_block" {
+variable "LB_subnet-1_cidr_block" {
   type    = string
   default = ""
 }
-variable "subnet-2_cidr_block" {
+variable "LB_subnet-2_cidr_block" {
   type    = string
   default = ""
 }
-variable "subnet-3_cidr_block" {
+variable "Fsubnet-3_cidr_block" {
   type    = string
   default = ""
 }
-variable "subnet-4_cidr_block" {
-  type    = string
-  default = ""
-}
-
-variable "subnet-1_az" {
+variable "Fsubnet-4_cidr_block" {
   type    = string
   default = ""
 }
 
-variable "subnet-2_az" {
+variable "Bsubnet-5_cidr_block" {
   type    = string
   default = ""
 }
-#TODO: #subnet-1 name variable
-variable "subnet-1_name" {
+variable "Bsubnet-6_cidr_block" {
   type    = string
   default = ""
 }
-variable "subnet-2_name" {
+
+variable "RDS_subnet-7_cidr_block" {
   type    = string
   default = ""
 }
-variable "subnet-3_name" {
+variable "RDS_subnet-8_cidr_block" {
   type    = string
   default = ""
 }
-variable "subnet-4_name" {
+
+variable "subnet-1a_az" {
   type    = string
   default = ""
 }
+
+variable "subnet-1b_az" {
+  type    = string
+  default = ""
+}
+##############################################################################################
+
+
+
 
 variable "role_name" {
   type    = string
