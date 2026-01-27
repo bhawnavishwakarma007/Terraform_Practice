@@ -14,7 +14,7 @@ resource "aws_subnet" "LB_public-1" {
   availability_zone       = var.subnet-1a_az # us-east-1a
   map_public_ip_on_launch = true
   tags = {
-    Name = "public-1a"
+    Name = var.lb_public_1_name
   }
 }
 
@@ -25,7 +25,7 @@ resource "aws_subnet" "LB_public-2" {
   availability_zone       = var.subnet-1b_az # us-east-1b
   map_public_ip_on_launch = true
   tags = {
-    Name = "public-2b"
+    Name = var.lb_public_2_name
   }
 }
 
@@ -35,7 +35,7 @@ resource "aws_subnet" "Fprivate-3" {
   cidr_block        = var.Fsubnet-3_cidr_block
   availability_zone = var.subnet-1a_az # us-east-1a
   tags = {
-    Name = "private-3a"
+    Name = var.frontend_private_3_name
   }
 }
 #Creating private subnets for frontend servers
@@ -44,7 +44,7 @@ resource "aws_subnet" "Fprivate-4" {
   cidr_block        = var.Fsubnet-4_cidr_block
   availability_zone = var.subnet-1b_az # us-east-1b
   tags = {
-    Name = "private-4b"
+    Name = var.frontend_private_4_name
   }
 }
 
@@ -54,7 +54,7 @@ resource "aws_subnet" "Bprivate-5" {
   cidr_block        = var.Bsubnet-5_cidr_block
   availability_zone = var.subnet-1a_az # us-east-1c
   tags = {
-    Name = "private-5a"
+    Name = var.backend_private_5_name
   }
 }
 
@@ -64,7 +64,7 @@ resource "aws_subnet" "Bprivate-6" {
   cidr_block        = var.Bsubnet-6_cidr_block
   availability_zone = var.subnet-1b_az # us-east-1c
   tags = {
-    Name = "private-6b"
+    Name = var.backend_private_6_name
   }
 }
 
@@ -74,7 +74,7 @@ resource "aws_subnet" "RDS_private-7" {
   cidr_block        = var.RDS_subnet-7_cidr_block
   availability_zone = var.subnet-1a_az # us-east-1a
   tags = {
-    Name = "private-7a"
+    Name = var.rds_private_7_name
   }
 }
 
@@ -84,16 +84,15 @@ resource "aws_subnet" "RDS_private-8" {
   cidr_block        = var.RDS_subnet-8_cidr_block
   availability_zone = var.subnet-1b_az # us-east-1b
   tags = {
-    Name = "private-8b"
+    Name = var.rds_private_8_name
   }
 }
-
 
 #Creating internet gateway
 resource "aws_internet_gateway" "name" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "book-ig"
+    Name = var.internet_gateway_name
   }
 }
 
@@ -101,7 +100,7 @@ resource "aws_internet_gateway" "name" {
 resource "aws_route_table" "pub_rt" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "book-pub-rt"
+    Name = var.public_route_table_name
   }
 
   route {
@@ -125,7 +124,7 @@ resource "aws_route_table_association" "pub-2" {
 #Creating Elastic IP for NAT Gateway
 resource "aws_eip" "eip" {
   tags = {
-    Name = "book-eip"
+    Name = var.eip_name
   }
 }
 
@@ -135,16 +134,15 @@ resource "aws_nat_gateway" "nat" {
   connectivity_type = "public"
   allocation_id     = aws_eip.eip.id
   tags = {
-    Name = "book-nat"
+    Name = var.nat_gateway_name
   }
 }
-
 
 #Creating Private Route Table
 resource "aws_route_table" "pvt-rt" {
   vpc_id = aws_vpc.vpc.id
   tags = {
-    Name = "book-private-rt"
+    Name = var.private_route_table_name
   }
 
   route {
@@ -168,17 +166,17 @@ resource "aws_route_table_association" "pvt-4" {
 #Creating Private Route Table Association for RSD Subnet5
 resource "aws_route_table_association" "pvt-5" {
   route_table_id = aws_route_table.pvt-rt.id
-  subnet_id      = aws_subnet.Bprivate-5
+  subnet_id      = aws_subnet.Bprivate-5.id
 }
 
 #Creating Private Route Table Association for RSD Subnet6
 resource "aws_route_table_association" "pvt-6" {
   route_table_id = aws_route_table.pvt-rt.id
-  subnet_id      = aws_subnet.Bprivate-6
+  subnet_id      = aws_subnet.Bprivate-6.id
 }
 
 #Creating Private Route Table Association for RSD Subnet7
-resource "aws_route_table_association" "pvt-5" {
+resource "aws_route_table_association" "pvt-7" {
   route_table_id = aws_route_table.pvt-rt.id
   subnet_id      = aws_subnet.RDS_private-7.id
 }
@@ -193,7 +191,7 @@ resource "aws_route_table_association" "pvt-8" {
 
 #Creating Security Group for ALB
 resource "aws_security_group" "bastion-host-alb-sg" {
-  name        = "alb-sg"
+  name        = var.bastion_host_sg_name
   description = "Allow inbound traffic from ALB"
   vpc_id      = aws_vpc.vpc.id
   depends_on  = [aws_vpc.vpc]
@@ -211,20 +209,18 @@ resource "aws_security_group" "bastion-host-alb-sg" {
   }
 
   tags = {
-    Name = "bastion-host-alb-sg"
+    Name = var.bastion_host_sg_name
   }
 }
 
-
 #Creating Security Group for ALB Frontend
 resource "aws_security_group" "alb-frontend-sg" {
-  name        = "alb-frontend-sg"
+  name        = var.alb_frontend_sg_name
   description = "Allow inbound traffic from ALB"
   vpc_id      = aws_vpc.vpc.id
   depends_on  = [aws_vpc.vpc]
 
   ingress = [
-
     for port in [22, 443] : {
       description = "Allow inbound traffic from Frontend ALB on port ${port}"
       from_port   = port
@@ -240,15 +236,13 @@ resource "aws_security_group" "alb-frontend-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
   tags = {
-    Name = "alb-frontend-sg"
+    Name = var.alb_frontend_sg_name
   }
 }
 
-
 #  Creating Security Group for ALB Backend
-
 resource "aws_security_group" "alb-backend-sg" {
-  name        = "alb-backend-sg"
+  name        = var.alb_backend_sg_name
   description = "Allow inbound traffic ALB"
   vpc_id      = aws_vpc.vpc.id
   depends_on  = [aws_vpc.vpc]
@@ -271,14 +265,13 @@ resource "aws_security_group" "alb-backend-sg" {
   }
 
   tags = {
-    Name = "alb-backend-sg"
+    Name = var.alb_backend_sg_name
   }
-
 }
 
 # Creating Security Group for Frontend Server
 resource "aws_security_group" "frontend-server-sg" {
-  name        = "frontend-server-sg"
+  name        = var.frontend_server_sg_name
   description = "Allow inbound traffic "
   vpc_id      = aws_vpc.vpc.id
   depends_on  = [aws_vpc.vpc, aws_security_group.alb-frontend-sg]
@@ -301,16 +294,13 @@ resource "aws_security_group" "frontend-server-sg" {
   }
 
   tags = {
-    Name = "frontend-server-sg"
+    Name = var.frontend_server_sg_name
   }
-
 }
 
-
 #  Creating security group for backend server
-
 resource "aws_security_group" "backend-server-sg" {
-  name        = "backend-server-sg"
+  name        = var.backend_server_sg_name
   description = "Allow inbound traffic"
   vpc_id      = aws_vpc.vpc.id
   depends_on  = [aws_vpc.vpc, aws_security_group.alb-backend-sg]
@@ -332,14 +322,13 @@ resource "aws_security_group" "backend-server-sg" {
   }
 
   tags = {
-    Name = "backend-server-sg"
+    Name = var.backend_server_sg_name
   }
 }
 
-
 # Creating security group for RDS database 
 resource "aws_security_group" "book-rds-sg" {
-  name        = "book-rds-sg"
+  name        = var.rds_sg_name
   description = "Allow inbound "
   vpc_id      = aws_vpc.vpc.id
   depends_on  = [aws_vpc.vpc]
@@ -351,7 +340,6 @@ resource "aws_security_group" "book-rds-sg" {
       to_port     = port
       protocol    = "tcp"
       cidr_blocks = ["0.0.0.0/0"]
-
     }
   ]
   egress {
@@ -362,11 +350,38 @@ resource "aws_security_group" "book-rds-sg" {
   }
 
   tags = {
-    Name = "book-rds-sg"
+    Name = var.rds_sg_name
   }
-
 }
 
+##############################################################################################
+
+#Creating EC2 Instances for frontend server
+resource "aws_instance" "frontend-server" {
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.frontend-server-sg.id]
+  subnet_id              = aws_subnet.Fprivate-3.id
+  #TODO: Add user data to the frontend server
+  tags = {
+    Name = var.frontend_instance_name
+  }
+}
+
+#Creating EC2 Instances for backend server
+resource "aws_instance" "backend-server" {
+  ami                    = var.ami
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.backend-server-sg.id]
+  subnet_id              = aws_subnet.Bprivate-5.id
+
+  #TODO: Add user data to the backend server
+  tags = {
+    Name = var.backend_instance_name
+  }
+}
 
 ##############################################################################################
 
@@ -378,7 +393,7 @@ resource "aws_db_subnet_group" "sub-grp" {
   subnet_ids = [aws_subnet.RDS_private-7.id, aws_subnet.RDS_private-8.id]
   depends_on = [aws_subnet.RDS_private-7, aws_subnet.RDS_private-8]
   tags = {
-    Name = "RDS Subnet Group"
+    Name = var.rds_subnet_group_tag_name
   }
 }
 
@@ -414,10 +429,212 @@ resource "aws_db_instance" "name" {
   depends_on = [aws_db_subnet_group.sub-grp]
 }
 
+##############################################################################################
+
+#Cretaing AMI for frontend server
+resource "aws_ami_from_instance" "frontend-ami" {
+  name                    = var.frontend_ami_name
+  source_instance_id      = aws_instance.frontend-server.id
+  depends_on              = [aws_instance.frontend-server]
+  snapshot_without_reboot = false
+  tags = {
+    Name = var.frontend_ami_name
+  }
+}
+
+#Cretaing AMI for backend server
+resource "aws_ami_from_instance" "backend-ami" {
+  name                    = var.backend_ami_name
+  source_instance_id      = aws_instance.backend-server.id
+  depends_on              = [aws_instance.backend-server]
+  snapshot_without_reboot = false
+  tags = {
+    Name = var.backend_ami_name
+  }
+}
+
+#Launch Template Resource for frontend server
+resource "aws_launch_template" "frontend" {
+  name                   = var.frontend_launch_template_name
+  description            = var.frontend_launch_template_description
+  image_id               = aws_ami_from_instance.frontend-ami.id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.frontend-server-sg.id]
+  update_default_version = true
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = var.frontend_instance_name
+    }
+  }
+}
+
+#Launch Template Resource for backend server
+resource "aws_launch_template" "backend" {
+  name                   = var.backend_launch_template_name
+  description            = var.backend_launch_template_description
+  image_id               = aws_ami_from_instance.backend-ami.id
+  instance_type          = var.instance_type
+  key_name               = var.key_name
+  vpc_security_group_ids = [aws_security_group.backend-server-sg.id]
+  update_default_version = true
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = var.backend_instance_name
+    }
+  }
+}
 
 ##############################################################################################
 
-#Launch Template Resource
+#Creating Target Group for frontend server
+resource "aws_lb_target_group" "frontend-tg" {
+  name     = var.frontend_tg_name
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+}
 
+#creating Load Balancer for frontend server
+resource "aws_lb" "frontend-lb" {
+  name               = var.frontend_lb_name
+  load_balancer_type = "application"
+  internal           = false
+  subnets            = [aws_subnet.LB_public-1.id, aws_subnet.LB_public-2.id]
+  tags = {
+    Name = var.frontend_lb_name
+  }
+  depends_on = [aws_lb_target_group.frontend-tg]
+}
 
+#Creating Listener for frontend server
+resource "aws_lb_listener" "frontend-listener" {
+  load_balancer_arn = aws_lb.frontend-lb.arn
+  port              = "80"
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.frontend-tg.arn
+  }
+  depends_on = [aws_lb.frontend-lb, aws_lb_target_group.frontend-tg]
+}
 
+#Creating Target Group for backend server
+resource "aws_lb_target_group" "backend-tg" {
+  name     = var.backend_tg_name
+  port     = 80
+  protocol = "HTTP"
+  vpc_id   = var.vpc_id
+}
+
+#creating Load Balancer for backend server
+resource "aws_lb" "backend-lb" {
+  name               = var.backend_lb_name
+  load_balancer_type = "application"
+  internal           = false
+  subnets            = [aws_subnet.LB_public-1.id, aws_subnet.LB_public-2.id]
+  tags = {
+    Name = var.backend_lb_name
+  }
+  depends_on = [aws_lb_target_group.backend-tg]
+}
+
+#Creating Listener for backend server
+resource "aws_lb_listener" "backend-listener" {
+  load_balancer_arn = aws_lb.backend-lb.arn
+  port              = "80"
+  protocol          = "HTTP"
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.backend-tg.arn
+  }
+  depends_on = [aws_lb.backend-lb, aws_lb_target_group.backend-tg]
+}
+
+##############################################################################################
+
+#Creating Auto Scaling Group for frontend server
+resource "aws_autoscaling_group" "frontend-asg" {
+  name              = var.frontend_asg_name
+  max_size          = var.max_size
+  min_size          = var.min_size
+  desired_capacity  = var.desired_capacity
+  target_group_arns = [aws_lb_target_group.frontend-tg.arn]
+  launch_template {
+    id      = aws_launch_template.frontend.id
+    version = "$Latest"
+  }
+  vpc_zone_identifier = [aws_subnet.Fprivate-3.id, aws_subnet.Fprivate-4.id]
+
+  depends_on = [aws_launch_template.frontend]
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
+    triggers = ["desired_capacity"]
+  }
+
+  tag {
+    key                 = "Name"
+    value               = var.frontend_asg_name
+    propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_policy" "frontend-scale-out" {
+  name                   = var.frontend_scale_out_policy_name
+  autoscaling_group_name = aws_autoscaling_group.frontend-asg.name
+  policy_type            = "TargetTrackingScaling"
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = var.scale_out_target_value
+  }
+}
+
+#Creating Auto Scaling Group for backend server
+resource "aws_autoscaling_group" "backend-asg" {
+  name              = var.backend_asg_name
+  max_size          = var.max_size
+  min_size          = var.min_size
+  desired_capacity  = var.desired_capacity
+  target_group_arns = [aws_lb_target_group.backend-tg.arn]
+  launch_template {
+    id      = aws_launch_template.backend.id
+    version = "$Latest"
+  }
+  vpc_zone_identifier = [aws_subnet.Bprivate-3.id, aws_subnet.Bprivate-4.id]
+
+  depends_on = [aws_launch_template.backend]
+
+  instance_refresh {
+    strategy = "Rolling"
+    preferences {
+      min_healthy_percentage = 50
+    }
+    triggers = ["desired_capacity"]
+  }
+
+  tag {
+    key                 = "Name"
+    value               = var.backend_asg_name
+    propagate_at_launch = true
+  }
+}
+
+resource "aws_autoscaling_policy" "backend-scale-out" {
+  name                   = var.backend_scale_out_policy_name
+  autoscaling_group_name = aws_autoscaling_group.backend-asg.name
+  policy_type            = "TargetTrackingScaling"
+  target_tracking_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ASGAverageCPUUtilization"
+    }
+    target_value = var.scale_out_target_value
+  }
+}
